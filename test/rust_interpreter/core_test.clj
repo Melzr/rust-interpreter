@@ -251,3 +251,53 @@
     ))
   )
 )
+
+
+
+; user=> (dividir 12 3)
+; 4
+(deftest dividir-12-3
+  (testing "dividir 12 3"
+    (is (= 4 (dividir 12 3)))
+  )
+)
+
+; user=> (dividir 12.0 3)
+; 4.0
+(deftest dividir-120-3
+  (testing "dividir 12.0 3"
+    (is (= 4.0 (dividir 12.0 3)))
+  )
+)
+
+; user=> (dividir 12 3.0)
+; 4.0
+(deftest dividir-12-30
+  (testing "dividir 12 3.0"
+    (is (= 4.0 (dividir 12 3.0)))
+  )
+)
+
+; user=> (dividir 12.0 3.0)
+; 4.0
+(deftest dividir-120-30
+  (testing "dividir 12.0 3.0"
+    (is (= 4.0 (dividir 12.0 3.0)))
+  )
+)
+
+; user=> (dividir 1 2)
+; 0
+(deftest division-entera
+  (testing "division entera"
+    (is (= 0 (dividir 1 2)))
+  )
+)
+
+; user=> (dividir 1 2.0)
+; 0.5
+(deftest division-float
+  (testing "division float"
+    (is (= 0.5 (dividir 1 2.0)))
+  )
+)

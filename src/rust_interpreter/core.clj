@@ -2118,22 +2118,22 @@
 ; [; (fn main ( ) { println! ( "{}" , TRES ) }) [use std :: io ; const TRES : i64 = 3] :sin-errores [[0] [[io [lib ()] 0] [TRES [const i64] 3]]] 0 [[CAL 0] HLT] []]
 ;                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn cargar-const-en-tabla
-  [amb] (if (= (estado amb) :sin-errores)
-          (let [contexto (contexto amb)]
-          ;;   (if (and (= (first simb-actual) 'const) (symbol? (second simb-actual)) (symbol? (nth simb-actual 2)) (number? (nth simb-actual 4)))
-          ;;     (let [identificador (second simb-actual), tipo (nth simb-actual 2), valor (nth simb-actual 4)]
-                (if (ya-declarado-localmente? identificador contexto)
-                  (assoc amb 3 41) ; error: delcaracion duplicada
-                  (assoc amb 4 (assoc contexto 1 (conj (second contexto) [identificador tipo valor])))
-                )
-              )
-              ;; (assoc amb :estado :sin-errores)
-            )
-          )
-          amb
-        )
-)
+;; (defn cargar-const-en-tabla
+;;   [amb] (if (= (estado amb) :sin-errores)
+;;           (let [contexto (contexto amb)]
+;;           ;;   (if (and (= (first simb-actual) 'const) (symbol? (second simb-actual)) (symbol? (nth simb-actual 2)) (number? (nth simb-actual 4)))
+;;           ;;     (let [identificador (second simb-actual), tipo (nth simb-actual 2), valor (nth simb-actual 4)]
+;;                 (if (ya-declarado-localmente? identificador contexto)
+;;                   (assoc amb 3 41) ; error: delcaracion duplicada
+;;                   (assoc amb 4 (assoc contexto 1 (conj (second contexto) [identificador tipo valor])))
+;;                 )
+;;               )
+;;               ;; (assoc amb :estado :sin-errores)
+;;             )
+;;           )
+;;           amb
+;;         )
+;; )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; INICIALIZAR-CONTEXTO-LOCAL: Recibe un ambiente y, si su estado no es :sin-errores, lo devuelve intacto.
@@ -2256,7 +2256,17 @@
 ; 0.5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn dividir
-  [] ())
+  [a b] (if (and (number? a) (number? b))
+          (if (= b 0)
+            (throw (Exception. "Division por 0"))
+            (if (or (float? a) (float? b))
+              (/ a b)
+              (quot a b)
+            )
+          )
+          (throw (Exception. "Datos invalidos"))
+        )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; COMPATIBLES?: Recibe dos elementos. Si el primero es un tipo de dato de Rust y el segundo es un valor de Clojure
