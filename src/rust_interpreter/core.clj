@@ -1998,7 +1998,22 @@
 ; (fn main ( ) { if x < 0 { x = - x ; } ; renglon = x ; if z < 0 { z = - z ; } } fn foo ( ) { if y > 0 { y = - y ; } else { x = - y ; } })
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn agregar-ptocoma
-  [] ())
+  [tokens] (if (empty? tokens) tokens 
+            (let [token (first tokens),
+                  siguiente (second tokens)]
+            (if (and
+                  (= token (symbol "}"))
+                  (not (= siguiente (symbol "}")))
+                  (not (= siguiente 'else))
+                  (not (= siguiente (symbol ")")))
+                  (not (= siguiente 'fn))
+                  (not (empty? (rest tokens)))
+                )
+              (-> (agregar-ptocoma (rest tokens)) (conj ,,, (symbol ";")) (conj ,,, token))
+              (conj (agregar-ptocoma (rest tokens)) token)
+            )
+  ))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PALABRA-RESERVADA?: Recibe un elemento y devuelve true si es una palabra reservada de Rust; si no, false.
@@ -2062,7 +2077,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn dump
   ([instrucciones]  (if (= nil instrucciones) (do (print "0 nil\n") nil) (dump instrucciones 0)))
-  ([instrucciones num] (if (empty? instrucciones) nil (do (print (str num " " (first instrucciones) "\n")) (recur (subvec instrucciones 1) (inc num)))))
+  ([instrucciones num] (if (empty? instrucciones) nil (do (print (str num " " (first instrucciones) "\n")) (recur (nthrest instrucciones 1) (inc num)))))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2082,7 +2097,13 @@
 ; false
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn ya-declarado-localmente?
-  [] ())
+  [identificador contexto] (let [posicion (last (first contexto)), declaraciones (second contexto)]
+    (if (empty? declaraciones)
+      false
+      (not (not-any? #(= identificador %) (map first (nthrest declaraciones posicion))))
+    )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; CARGAR-CONST-EN-TABLA: Recibe un ambiente 
