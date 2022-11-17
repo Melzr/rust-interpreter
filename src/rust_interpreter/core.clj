@@ -2119,12 +2119,21 @@
 ;                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn cargar-const-en-tabla
-  [amb] (
-         if (= (estado amb) :sin-errores)
-         (amb)
-         (amb)))
-  
-
+  [amb] (if (= (estado amb) :sin-errores)
+          (let [contexto (contexto amb)]
+          ;;   (if (and (= (first simb-actual) 'const) (symbol? (second simb-actual)) (symbol? (nth simb-actual 2)) (number? (nth simb-actual 4)))
+          ;;     (let [identificador (second simb-actual), tipo (nth simb-actual 2), valor (nth simb-actual 4)]
+                (if (ya-declarado-localmente? identificador contexto)
+                  (assoc amb 3 41) ; error: delcaracion duplicada
+                  (assoc amb 4 (assoc contexto 1 (conj (second contexto) [identificador tipo valor])))
+                )
+              )
+              ;; (assoc amb :estado :sin-errores)
+            )
+          )
+          amb
+        )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; INICIALIZAR-CONTEXTO-LOCAL: Recibe un ambiente y, si su estado no es :sin-errores, lo devuelve intacto.
@@ -2139,7 +2148,13 @@
 ;                                                               ^^^^^^^^^^^^     ^  ^^^^^^^^^^^^^^^^^^^^^^^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn inicializar-contexto-local
-  [] ())
+  [amb] (if (= (estado amb) :sin-errores)
+          (let [contexto (contexto amb)]
+            (assoc amb 4 (assoc contexto 0 (conj (first contexto) (count (second contexto)))))
+          )
+          amb
+        )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; RESTAURAR-CONTEXTO-ANTERIOR: Recibe un ambiente y, si su estado no es :sin-errores, lo devuelve intacto.
@@ -2154,7 +2169,13 @@
 ;                                                                                           ^^^^^^^^^^^^  ^^^ ^^^^^^^^^^^^^^^^^^^^^^^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn restaurar-contexto-anterior
-  [] ())
+  [amb] (if (= (estado amb) :sin-errores)
+          (let [contexto (contexto amb), frontera (peek (first contexto))]
+            (assoc amb 4 (assoc contexto 0 (pop (first contexto)) 1 (subvec (second contexto) 0 frontera)))
+          )
+          amb
+        )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; BUSCAR-TIPO-DE-RETORNO: Recibe un ambiente y la direccion de una funcion a ser buscada en el segundo subvector del
