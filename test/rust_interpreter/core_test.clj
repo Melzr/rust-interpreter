@@ -530,3 +530,43 @@
     (is (= false (compatibles? 'usize -1)))
   )
 )
+
+; user=> (pasar-a-int "10")
+; 10
+(deftest parsear-a-int-string
+  (testing "parsear a int string"
+    (is (= 10 (pasar-a-int "10")))
+  )
+)
+
+; user=> (pasar-a-int 10.0)
+; 10
+(deftest parsear-a-int-float
+  (testing "parsear a int float"
+    (is (= 10 (pasar-a-int 10.0)))
+  )
+)
+
+; user=> (pasar-a-int 10)
+; 10
+(deftest parsear-a-int-int
+  (testing "parsear a int int"
+    (is (= 10 (pasar-a-int 10)))
+  )
+)
+
+; user=> (pasar-a-int 'a)
+; a
+(deftest parsear-a-int-simbolo
+  (testing "parsear a int simbolo"
+    (is (= 'a (pasar-a-int 'a)))
+  )
+)
+
+; user=> (pasar-a-int [10.0])
+; [10.0]
+(deftest parsear-a-int-vector
+  (testing "parsear a int vector"
+    (is (= [10.0] (pasar-a-int [10.0])))
+  )
+)

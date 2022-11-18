@@ -2329,16 +2329,17 @@
 ; true
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn compatibles?
-  [tipo valor] (cond
-                  (vector? valor) true
-                  (and (or (= tipo 'i64) (= tipo 'i32)) (integer? valor)) true
-                  (and (or (= tipo 'u64) (= tipo 'u32) (= tipo 'usize)) (integer? valor) (>= valor 0)) true
-                  (and (or (= tipo 'f64) (= tipo 'f32)) (float? valor)) true
-                  (and (= tipo 'String) (string? valor)) true
-                  (and (= tipo 'bool) (boolean? valor)) true
-                  (and (= tipo 'char) (char? valor)) true
-                  :else false
-                )
+  [tipo valor] (
+    cond
+      (vector? valor) true
+      (and (or (= tipo 'i64) (= tipo 'i32)) (integer? valor)) true
+      (and (or (= tipo 'u64) (= tipo 'u32) (= tipo 'usize)) (integer? valor) (>= valor 0)) true
+      (and (or (= tipo 'f64) (= tipo 'f32)) (float? valor)) true
+      (and (= tipo 'String) (string? valor)) true
+      (and (= tipo 'bool) (boolean? valor)) true
+      (and (= tipo 'char) (char? valor)) true
+      :else false
+  )
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2356,7 +2357,13 @@
 ; [10.0]
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn pasar-a-int
-  [] ())
+  [numero] (
+    cond
+      (float? numero) (int numero)
+      (string? numero) (Integer/parseInt numero)
+      :else numero
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PASAR-A-FLOAT: Recibe un elemento. Si puede devolverlo expresado como un numero de punto flotante, lo hace. Si no,
