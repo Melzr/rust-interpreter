@@ -570,3 +570,43 @@
     (is (= [10.0] (pasar-a-int [10.0])))
   )
 )
+
+; user=> (pasar-a-float "10")
+; 10.0
+(deftest parsear-a-float-string
+  (testing "parsear a float string"
+    (is (= 10.0 (pasar-a-float "10")))
+  )
+)
+
+; user=> (pasar-a-float 10)
+; 10.0
+(deftest parsear-a-float-int
+  (testing "parsear a float int"
+    (is (= 10.0 (pasar-a-float 10)))
+  )
+)
+
+; user=> (pasar-a-float 10.0)
+; 10.0
+(deftest parsear-a-float-float
+  (testing "parsear a float float"
+    (is (= 10.0 (pasar-a-float 10.0)))
+  )
+)
+
+; user=> (pasar-a-float 'a)
+; a
+(deftest parsear-a-float-simbolo
+  (testing "parsear a float simbolo"
+    (is (= 'a (pasar-a-float 'a)))
+  )
+)
+
+; user=> (pasar-a-float [10])
+; [10]
+(deftest parsear-a-float-vector
+  (testing "parsear a float vector"
+    (is (= [10] (pasar-a-float [10])))
+  )
+)
