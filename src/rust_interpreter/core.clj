@@ -2421,6 +2421,10 @@
 ;                                 ^^^ ^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn cargar-en-reg-dest
-  [] ())
+  [registros coordenadas tipo valor] (
+    let [subvector (nth registros (first coordenadas))]
+    (assoc registros (first coordenadas) (assoc subvector (second coordenadas) [tipo valor]))
+  )
+)
 
 (defn -main [] (driver-loop))
