@@ -2265,7 +2265,7 @@
     if (empty? valores-no-parseados)
       (cons cadena valores)
       (cond
-        (int? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%d") (rest valores-no-parseados))
+        (integer? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%d") (rest valores-no-parseados))
         (float? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%.$1f") (rest valores-no-parseados))
         :else (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%s") (rest valores-no-parseados))
       )
@@ -2329,7 +2329,17 @@
 ; true
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn compatibles?
-  [])
+  [tipo valor] (cond
+                  (vector? valor) true
+                  (and (or (= tipo 'i64) (= tipo 'i32)) (integer? valor)) true
+                  (and (or (= tipo 'u64) (= tipo 'u32) (= tipo 'usize)) (integer? valor) (>= valor 0)) true
+                  (and (or (= tipo 'f64) (= tipo 'f32)) (float? valor)) true
+                  (and (= tipo 'String) (string? valor)) true
+                  (and (= tipo 'bool) (boolean? valor)) true
+                  (and (= tipo 'char) (char? valor)) true
+                  :else false
+                )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PASAR-A-INT: Recibe un elemento. Si puede devolverlo expresado como un entero, lo hace. Si no, lo devuelve intacto.

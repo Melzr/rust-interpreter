@@ -436,3 +436,97 @@
     (is (= 0.5 (dividir 1 2.0)))
   )
 )
+
+; user=> (compatibles? 'i64 5)
+; true
+(deftest compatibles-i64-5
+  (testing "compatibles i64 5"
+    (is (= true (compatibles? 'i64 5)))
+  )
+)
+
+; user=> (compatibles? 'i64 5.0)
+; false
+(deftest compatibles-i64-5.0
+  (testing "compatibles i64 5.0"
+    (is (= false (compatibles? 'i64 5.0)))
+  )
+)
+
+; user=> (compatibles? 'i64 [5.0])
+; true
+(deftest compatibles-i64-5.0-vector
+  (testing "compatibles i64 5.0 vector"
+    (is (= true (compatibles? 'i64 [5.0])))
+  )
+)
+
+; user=> (compatibles? 'f64 5.0)
+; true
+(deftest compatibles-f64-5.0
+  (testing "compatibles f64 5.0"
+    (is (= true (compatibles? 'f64 5.0)))
+  )
+)
+
+; user=> (compatibles? 'String "Hola")
+; true
+(deftest compatibles-string-hola
+  (testing "compatibles string hola"
+    (is (= true (compatibles? 'String "Hola")))
+  )
+)
+
+; user=> (compatibles? 'bool true)
+; true
+(deftest compatibles-bool-true
+  (testing "compatibles bool true"
+    (is (= true (compatibles? 'bool true)))
+  )
+)
+
+; user=> (compatibles? 'bool 1)
+; false
+(deftest compatibles-bool-1
+  (testing "compatibles bool 1"
+    (is (= false (compatibles? 'bool 1)))
+  )
+)
+
+; user=> (compatibles? 'usize 1)
+; true
+(deftest compatibles-usize-1
+  (testing "compatibles usize 1"
+    (is (= true (compatibles? 'usize 1)))
+  )
+)
+
+; user=> (compatibles? 'char \a)
+; true
+(deftest compatibles-char-a
+  (testing "compatibles char a"
+    (is (= true (compatibles? 'char \a)))
+  )
+)
+
+; user=> (compatibles? 'char 'a)
+; false
+(deftest compatibles-char-a-simbolo
+  (testing "compatibles char a simbolo"
+    (is (= false (compatibles? 'char 'a)))
+  )
+)
+
+; user=> (compatibles? 'char ['a])
+; true
+(deftest compatibles-char-a-vector
+  (testing "compatibles char a vector"
+    (is (= true (compatibles? 'char ['a])))
+  )
+)
+
+(deftest compatibles-negative-usize
+  (testing "compatibles negative usize"
+    (is (= false (compatibles? 'usize -1)))
+  )
+)
