@@ -1975,6 +1975,10 @@
 ; LAS FUNCIONES QUE SIGUEN DEBERAN SER IMPLEMENTADAS PARA QUE ANDE EL INTERPRETE DE RUST 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn get-tabs
+  [n] (if (zero? n) "" (apply str (repeat n "  ")))
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LISTAR: Recibe una lista con los tokens de un programa en Rust (o de parte de un programa) y muestra el codigo fuente formateado. Retorna nil.
 ; Por ejemplo:
@@ -1987,8 +1991,15 @@
 ; nil
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn listar
-  [tokens] (if (empty? tokens) (do (print "\n") nil) (do (print (first tokens)) (recur (rest tokens)))))
-
+  ([tokens] (listar tokens 0))
+  ([tokens tabs] (
+    cond
+      (empty? tokens) (do (print "\n") nil)
+      (= (symbol "{") (first tokens)) (do (print (str "\n" (get-tabs tabs) (first tokens) "\n" (get-tabs (inc tabs)))) (recur (rest tokens) (inc tabs)))
+      (= (symbol "}") (first tokens)) (do (print (str "\n" (get-tabs (dec tabs)) (first tokens) "\n" (get-tabs (dec tabs)))) (recur (rest tokens) (dec tabs)))
+      :else (do (print (str (first tokens) " ")) (recur (rest tokens) tabs))
+  ))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; AGREGAR-PTOCOMA: Recibe una lista con los tokens de un programa en Rust y la devuelve con un token ; insertado a continuacion de ciertas } (llaves de cierre, pero no a continuacion de todas ellas).
