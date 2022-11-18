@@ -2186,7 +2186,17 @@
 ; nil
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn buscar-tipo-de-retorno
-  [] ())
+  ([amb direccion] (
+    let [simbolos (second (contexto amb))]
+    (buscar-tipo-de-retorno amb direccion simbolos)
+  ))
+  ([amb direccion simbolos] (
+    cond
+      (empty? simbolos) nil
+      (= (last (first simbolos)) direccion) (last (last (second (first simbolos))))
+      :else (recur amb direccion (rest simbolos))
+  ))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; GENERAR-REF: Recibe un ambiente y, si su estado no es :sin-errores, lo devuelve intacto.
