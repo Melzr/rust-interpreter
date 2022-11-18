@@ -2212,7 +2212,18 @@
 ;                                                                                                                           ^  ^^^^^^^^^^^^                                                                    ^^^^^^^^^^^^^^^^^                                                                               ^^^^^^^^^^^^
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn generar-ref
-  [] ())
+  ([amb] (
+    if (= (estado amb) :sin-errores)
+      (generar-ref amb (second (contexto amb)) (last (simb-ya-parseados amb)))
+      amb
+  ))
+  ([amb simbolos simbolo-buscado] (
+    cond
+      (empty? simbolos) amb
+      (= (first (last simbolos)) simbolo-buscado) (generar amb 'PUSHADDR (last (last simbolos)))
+      :else (recur amb (butlast simbolos) simbolo-buscado)
+  ))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; FIXUP: Recibe un ambiente y la ubicacion de un JMP ? a corregir en el vector de bytecode. Si el estado no es
