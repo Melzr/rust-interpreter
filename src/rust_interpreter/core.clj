@@ -2260,7 +2260,17 @@
 ; ("Las raices cuadradas de %.0f son +%.8f y -%.8f" 4.0 1.999999999985448 1.999999999985448)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn convertir-formato-impresion
-  [] ())
+  ([argumentos] (convertir-formato-impresion (pop argumentos) (clojure.string/replace (first argumentos) #"\{\}" "{:.0}") (rest argumentos)))
+  ([valores cadena valores-no-parseados] (
+    if (empty? valores-no-parseados)
+      (cons cadena valores)
+      (cond
+        (int? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%d") (rest valores-no-parseados))
+        (float? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%.$1f") (rest valores-no-parseados))
+        :else (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%s") (rest valores-no-parseados))
+      )
+  ))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; DIVIDIR: Recibe dos numeros y devuelve su cociente, manteniendo su tipo.

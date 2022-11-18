@@ -345,6 +345,49 @@
   )
 )
 
+; user=> (convertir-formato-impresion '("Hola, mundo!"))
+; ("Hola, mundo!")
+(deftest convertir-formato-impresion-hola-mundo
+  (testing "convertir-formato-impresion hola mundo"
+    (is (=
+      '("Hola, mundo!")
+      (convertir-formato-impresion '("Hola, mundo!"))
+    ))
+  )
+)
+
+; user=> (convertir-formato-impresion '("- My name is {}, James {}.\n- Hello, {}{}{}!" "Bond" "Bond" 0 0 7))
+; ("- My name is %s, James %s.\n- Hello, %d%d%d!" "Bond" "Bond" 0 0 7)
+(deftest convertir-formato-impresion-james-bond
+  (testing "convertir-formato-impresion james bond"
+    (is (=
+      '("- My name is %s, James %s.\n- Hello, %d%d%d!" "Bond" "Bond" 0 0 7)
+      (convertir-formato-impresion '("- My name is {}, James {}.\n- Hello, {}{}{}!" "Bond" "Bond" 0 0 7))
+    ))
+  )
+)
+
+; user=> (convertir-formato-impresion '("{} elevado a la {} es\t{}" 2.0 2 4.0))
+; ("%.0f elevado a la %d es\t%.0f" 2.0 2 4.0)
+(deftest convertir-formato-impresion-floats
+  (testing "convertir-formato-impresion floats"
+    (is (=
+      '("%.0f elevado a la %d es\t%.0f" 2.0 2 4.0)
+      (convertir-formato-impresion '("{} elevado a la {} es\t{}" 2.0 2 4.0))
+    ))
+  )
+)
+
+; user=> (convertir-formato-impresion '("Las raices cuadradas de {} son +{:.8} y -{:.8}" 4.0 1.999999999985448 1.999999999985448))
+; ("Las raices cuadradas de %.0f son +%.8f y -%.8f" 4.0 1.999999999985448 1.999999999985448)
+(deftest convertir-formato-impresion-floats-digitos
+  (testing "convertir-formato-impresion floats digitos"
+    (is (=
+      '("Las raices cuadradas de %.0f son +%.8f y -%.8f" 4.0 1.999999999985448 1.999999999985448)
+      (convertir-formato-impresion '("Las raices cuadradas de {} son +{:.8} y -{:.8}" 4.0 1.999999999985448 1.999999999985448))
+    ))
+  )
+)
 
 ; user=> (dividir 12 3)
 ; 4
