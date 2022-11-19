@@ -1674,16 +1674,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LA SIGUIENTE FUNCION DEBERA SER COMPLETADA PARA QUE ANDE EL INTERPRETE DE RUST 
-; FALTAN IMPLEMENTAR (todas como llamados recursivos a la funcion interpretar, con recur y argumentos actualizados):
-;
-; PUSHFI: PUSH FROM INSTRUCTION. Direccionamiento inmediato. Incrementa cont-prg en 1 y agrega al final de pila el valor del argumento.
-; PUSHFM: PUSH FROM MEMORY. Direccionamiento directo. Incrementa cont-prg en 1 y agrega al final de pila el elemento ubicado en la posicion de reg-actual indicada por el valor del argumento.
-; JMP: Salto incondicional. Cambia cont-prg por el valor del argumento.
-; JC: Salto condicional. Quita el ultimo valor de la pila. Si este es true, cambia cont-prg por el valor del argumento. Si no, incrementa cont-prg en 1.
-; CAL: Llamada a una funcion. Agrega al final de regs-de-act el reg-de-act (proveniente de mapa-regs) indicado por el argumento, cambia cont-prg por el valor del argumento y coloca al final de la pila la direccion de retorno (el valor del argumento incrementado en 1).
-; RETN: Indica el retorno de la llamada a un procedimiento (no funcion). Llama recursivamente a interpretar con valores actualizados de regs-de-act (se elimina el ultimo de ellos), cont-prg (pasa a ser el ultimo valor en la pila) y pila (se quita de ella el nuevo cont-prg).
-; NL: New line. Imprime un salto de linea e incrementa cont-prg en 1.
-; FLUSH: Purga la salida e incrementa cont-prg en 1.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn interpretar [cod regs-de-act cont-prg pila mapa-regs]
   (let [fetched (cod cont-prg),
@@ -1717,6 +1707,13 @@
         ; pila recibida: [1 23 5]
         ; pila al llamar recursivamente a interpretar: [1 23 5 [0 3]]
         PUSHADDR (recur cod regs-de-act (inc cont-prg) (conj pila [(dec (count regs-de-act)) (second fetched)]) mapa-regs)
+
+        ; PUSHFI: PUSH FROM INSTRUCTION. Direccionamiento inmediato. Incrementa cont-prg en 1 y agrega al final de pila el valor del argumento.
+        PUSHFI (recur cod regs-de-act (inc cont-prg) (conj pila (second fetched)) mapa-regs)
+
+        ; PUSHFM: PUSH FROM MEMORY. Direccionamiento directo. Incrementa cont-prg en 1 y agrega al final de pila el elemento ubicado en la posicion de reg-actual indicada por el valor del argumento.
+        PUSHFM (let [destino (second (reg-actual (second fetched)))]
+                 (recur cod regs-de-act (inc cont-prg) (conj pila (second ((regs-de-act (first destino)) (second destino)))) mapa-regs))
 
         ; Incrementa cont-prg en 1 y quita el ultimo elemento de pila. Si hay un argumento, este indica donde colocar el elemento en el ultimo de los regs-de-act al llamar recursivamente a interpretar (verificando la compatibilidad de los tipos)
         ; Si no lo hay, solo incrementa cont-prg en 1 y quita el elemento de la pila.
@@ -1817,6 +1814,26 @@
         ; pila al llamar recursivamente a interpretar: [1 "{} es el MCD entre " 3]
         RET (recur cod (vec (butlast regs-de-act)) (last (butlast pila)) (vec (conj (vec (drop-last 2 pila)) (last pila))) mapa-regs)
 
+        ; JMP: Salto incondicional. Cambia cont-prg por el valor del argumento.
+        JMP (recur cod regs-de-act (second fetched) pila mapa-regs)
+
+        ; JC: Salto condicional. Quita el ultimo valor de la pila. Si este es true, cambia cont-prg por el valor del argumento. Si no, incrementa cont-prg en 1.
+        JC (if (last pila)
+              (recur cod regs-de-act (second fetched) (vec (butlast pila)) mapa-regs)
+              (recur cod regs-de-act (inc cont-prg) (vec (butlast pila)) mapa-regs))
+        
+        ; CAL: Llamada a una funcion. Agrega al final de regs-de-act el reg-de-act (proveniente de mapa-regs) indicado por el argumento, cambia cont-prg por el valor del argumento y coloca al final de la pila la direccion de retorno (el valor del argumento incrementado en 1).
+        CAL (let [reg-de-act (get mapa-regs (second fetched))]
+              (recur cod (conj regs-de-act reg-de-act) (second fetched) (conj pila (inc cont-prg)) mapa-regs))
+
+        ; RETN: Indica el retorno de la llamada a un procedimiento (no funcion). Llama recursivamente a interpretar con valores actualizados de regs-de-act (se elimina el ultimo de ellos), cont-prg (pasa a ser el ultimo valor en la pila) y pila (se quita de ella el nuevo cont-prg).
+        RETN (recur cod (vec (butlast regs-de-act)) (last pila) (vec (butlast pila)) mapa-regs)
+        
+        ; NL: New line. Imprime un salto de linea e incrementa cont-prg en 1.
+        NL (do (println) (recur cod regs-de-act (inc cont-prg) pila mapa-regs))
+
+        ; FLUSH: Purga la salida e incrementa cont-prg en 1.
+        FLUSH (do (flush) (recur cod regs-de-act (inc cont-prg) pila mapa-regs))
 
         ; Incrementa cont-prg en 1 y quita el ultimo elemento de pila. El argumento indica donde sumar el elemento en el ultimo de los regs-de-act al llamar recursivamente a interpretar (verificando la compatibilidad de los tipos)
         ; Por ejemplo: 
@@ -1901,12 +1918,12 @@
               (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
 
         ; OR: Como ADD, pero calcula el or entre los dos valores.
-        ;; OR (let [res (aplicar-operador-diadico or pila)]
-        ;;       (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
+        OR (let [res (aplicar-operador-diadico #(or %1 %2) pila)]
+              (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
 
         ; AND: Como ADD, pero calcula el and entre los dos valores.
-        ;; AND (let [res (aplicar-operador-diadico and pila)]
-        ;;       (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
+        AND (let [res (aplicar-operador-diadico #(and %1 %2) pila)]
+              (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
 
         ; EQ: Como ADD, pero calcula la operacion relacional = entre los dos valores.
         EQ (let [res (aplicar-operador-diadico = pila)]
@@ -1953,20 +1970,20 @@
               (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
         
         ; SQRT: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su raiz cuadrada y la coloca al final de la pila.
-        ;; SQRT (let [res (aplicar-operador-monadico sqrt pila)]
-        ;;       (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
+        SQRT (let [res (aplicar-operador-monadico #(. Math sqrt %) pila)]
+              (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
         
-        ;; ; SIN: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su seno y lo coloca al final de la pila.
-        ;; SIN (let [res (aplicar-operador-monadico sin pila)]
-        ;;       (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
+        ; SIN: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su seno y lo coloca al final de la pila.
+        SIN (let [res (aplicar-operador-monadico #(. Math sin %) pila)]
+              (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
 
-        ;; ; ATAN: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su arcotangente y la coloca al final de la pila.
-        ;; ATAN (let [res (aplicar-operador-monadico atan pila)]
-        ;;       (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
+        ; ATAN: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su arcotangente y la coloca al final de la pila.
+        ATAN (let [res (aplicar-operador-monadico #(. Math atan %) pila)]
+              (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
         
-        ;; ; ABS: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su valor absoluto y lo coloca al final de la pila.
-        ;; ABS (let [res (aplicar-operador-monadico abs pila)]
-        ;;       (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
+        ; ABS: Incrementa cont-prg en 1, quita de la pila un elemento numerico, calcula su valor absoluto y lo coloca al final de la pila.
+        ABS (let [res (aplicar-operador-monadico #(. Math abs %) pila)]
+              (if (nil? res) res (recur cod regs-de-act (inc cont-prg) res mapa-regs)))
       )
   )
 )
@@ -1990,14 +2007,16 @@
 ; 
 ; nil
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn listar
+(defn listar 
   ([tokens] (listar tokens 0))
   ([tokens tabs] (
     cond
       (empty? tokens) (do (print "\n") nil)
       (= (symbol "{") (first tokens)) (do (print (str "\n" (get-tabs tabs) (first tokens) "\n" (get-tabs (inc tabs)))) (recur (rest tokens) (inc tabs)))
       (= (symbol "}") (first tokens)) (do (print (str "\n" (get-tabs (dec tabs)) (first tokens) "\n" (get-tabs (dec tabs)))) (recur (rest tokens) (dec tabs)))
-      :else (do (print (str (first tokens) " ")) (recur (rest tokens) tabs))
+      (= (symbol ";") (first tokens)) (do (print (str (first tokens) "\n" (get-tabs tabs))) (recur (rest tokens) tabs))
+      (string? (first tokens)) (do (print (str "\"" (-> (first tokens) (clojure.string/replace #"\t" "\\\\t") (clojure.string/replace #"\n" "\\\\n")) "\"")) (recur (rest tokens) tabs))
+      :else (do (print (first tokens)) (print " ") (recur (rest tokens) tabs))
   ))
 )
 
@@ -2271,7 +2290,7 @@
 ; ("Las raices cuadradas de %.0f son +%.8f y -%.8f" 4.0 1.999999999985448 1.999999999985448)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn convertir-formato-impresion
-  ([argumentos] (convertir-formato-impresion (pop argumentos) (clojure.string/replace (first argumentos) #"\{\}" "{:.0}") (rest argumentos)))
+  ([argumentos] (if (empty? argumentos) argumentos (convertir-formato-impresion (rest argumentos) (clojure.string/replace (first argumentos) #"\{\}" "{:.0}") (rest argumentos))))
   ([valores cadena valores-no-parseados] (
     if (empty? valores-no-parseados)
       (cons cadena valores)

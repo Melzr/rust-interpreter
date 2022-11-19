@@ -2,6 +2,18 @@
   (:require [clojure.test :refer :all]
             [rust-interpreter.core :refer :all]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; TESTS UNITARIOS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; user=> (listar (list 'fn 'main (symbol "(") (symbol ")") (symbol "{") 'println! (symbol "(") "Hola, mundo!" (symbol ")") (symbol "}")))
+; fn main ( )
+; {
+;   println! ( "Hola, mundo!" )
+; }
+; 
+; nil
+
 ; user=> (agregar-ptocoma (list 'fn 'main (symbol "(") (symbol ")") (symbol "{") 'if 'x '< '0 (symbol "{") 'x '= '- 'x (symbol ";") (symbol "}") 'renglon '= 'x (symbol ";") 'if 'z '< '0 (symbol "{") 'z '= '- 'z (symbol ";") (symbol "}") (symbol "}") 'fn 'foo (symbol "(") (symbol ")") (symbol "{") 'if 'y '> '0 (symbol "{") 'y '= '- 'y (symbol ";") (symbol "}") 'else (symbol "{") 'x '= '- 'y (symbol ";") (symbol "}") (symbol "}")))
 ; (fn main ( ) { if x < 0 { x = - x ; } ; renglon = x ; if z < 0 { z = - z ; } } fn foo ( ) { if y > 0 { y = - y ; } else { x = - y ; } })
 (deftest agregar-ptocoma-programa
@@ -654,3 +666,66 @@
     ))
   )
 )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; TESTS DE INTEGRACION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; escan main01.rs
+;; fn main ( )
+;; {
+;;  println! ( "- Hola, mundo!" ) ;
+;;  print! ( "- My name is {}, James {}.\n- Hello, {}{}{}!" , "Bond" , "Bond" , - 2 + 2 , 0 , 3 + 2 * 2 ) ;
+;;  println! ( ) ;
+;;  println! ( "- Hasta la vista, Baby!\t\tI'll be back..." ) ;
+;;  println! ( "{}" , if true
+;;  {
+;;  "- Lo dudo!\t\t\tBye!"
+;;  }
+;;  else
+;;  {
+;;  "- Obviamente!"
+;;  }
+;;  )
+;; }
+
+; virtu main01.rs
+;; 0 [CAL 2]
+;; 1 HLT
+;; 2 [PUSHFI "- Hola, mundo!"]
+;; 3 [PUSHFI 1]
+;; 4 OUT
+;; 5 NL
+;; 6 [PUSHFI "- My name is {}, James {}.\n- Hello, {}{}{}!"]
+;; 7 [PUSHFI "Bond"]
+;; 8 [PUSHFI "Bond"]
+;; 9 [PUSHFI 2]
+;; 10 NEG
+;; 11 [PUSHFI 2]
+;; 12 ADD
+;; 13 [PUSHFI 0]
+;; 14 [PUSHFI 3]
+;; 15 [PUSHFI 2]
+;; 16 [PUSHFI 2]
+;; 17 MUL
+;; 18 ADD
+;; 19 [PUSHFI 6]
+;; 20 OUT
+;; 21 [PUSHFI 0]
+;; 22 OUT
+;; 23 NL
+;; 24 [PUSHFI "- Hasta la vista, Baby!\t\tI'll be back..."]
+;; 25 [PUSHFI 1]
+;; 26 OUT
+;; 27 NL
+;; 28 [PUSHFI "{}"]
+;; 29 [PUSHFI true]
+;; 30 [JC 32]
+;; 31 [JMP 34]
+;; 32 [PUSHFI "- Lo dudo!\t\t\tBye!"]
+;; 33 [JMP 35]
+;; 34 [PUSHFI "- Obviamente!"]
+;; 35 [PUSHFI 2]
+;; 36 OUT
+;; 37 NL
+;; 38 RETN
