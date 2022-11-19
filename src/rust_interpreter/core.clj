@@ -1712,8 +1712,8 @@
         PUSHFI (recur cod regs-de-act (inc cont-prg) (conj pila (second fetched)) mapa-regs)
 
         ; PUSHFM: PUSH FROM MEMORY. Direccionamiento directo. Incrementa cont-prg en 1 y agrega al final de pila el elemento ubicado en la posicion de reg-actual indicada por el valor del argumento.
-        PUSHFM (let [destino (second (reg-actual (second fetched)))]
-                 (recur cod regs-de-act (inc cont-prg) (conj pila (second ((regs-de-act (first destino)) (second destino)))) mapa-regs))
+        PUSHFM (let [elemento (second (reg-actual (second fetched)))]
+                 (recur cod regs-de-act (inc cont-prg) (conj pila elemento) mapa-regs))
 
         ; Incrementa cont-prg en 1 y quita el ultimo elemento de pila. Si hay un argumento, este indica donde colocar el elemento en el ultimo de los regs-de-act al llamar recursivamente a interpretar (verificando la compatibilidad de los tipos)
         ; Si no lo hay, solo incrementa cont-prg en 1 y quita el elemento de la pila.

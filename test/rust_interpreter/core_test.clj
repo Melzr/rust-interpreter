@@ -729,3 +729,180 @@
 ;; 36 OUT
 ;; 37 NL
 ;; 38 RETN
+
+;inter main01.rs
+;; - Hola, mundo!
+;; - My name is Bond, James Bond.
+;; - Hello, 007!
+;; - Hasta la vista, Baby! I'll be back...
+;; - Lo dudo! Bye!
+
+; escan main02
+;; use std :: io ;
+;; use std :: io :: Write ;
+;; fn main ( )
+;; {
+;;  println! ( "************************************************************" ) ;
+;;  println! ( "Se ingresan dos valores enteros, se muestra su producto." ) ;
+;;  println! ( "Se utiliza el algoritmo de 'multiplicacion por duplicacion'." ) ;
+;;  println! ( "(Metodo campesino ruso de multiplicacion)" ) ;
+;;  println! ( "************************************************************" ) ;
+;;  print! ( "x: " ) ;
+;;  io :: stdout ( ) . flush ( ) . expect ( "Error de escritura!" ) ;
+;;  let mut renglon : String = String :: new ( ) ;
+;;  io :: stdin ( ) . read_line ( & mut renglon ) . expect ( "Error de lectura!" ) ;
+;;  let mut x : i64 = renglon . trim ( ) . parse :: < i64 > ( ) . expect ( "Se esperaba un numero entero!" ) ;
+;;  let mut x_cambio : bool = false ;
+;;  if x < 0
+;;  {
+;;  x = - x ;
+;;  x_cambio = true ;
+;;  }
+;;  print! ( "y: " ) ;
+;;  io :: stdout ( ) . flush ( ) . expect ( "Error de escritura!" ) ;
+;;  renglon = String :: new ( ) ;
+;;  io :: stdin ( ) . read_line ( & mut renglon ) . expect ( "Error de lectura!" ) ;
+;;  let mut y : i64 = renglon . trim ( ) . parse :: < i64 > ( ) . expect ( "Se esperaba un numero entero!" ) ;
+;;  let mut y_cambio : bool = false ;
+;;  if y < 0
+;;  {
+;;  y = - y ;
+;;  y_cambio = true ;
+;;  }
+;;  let mut prod : i64 = 0 ;
+;;  while y > 0
+;;  {
+;;  if y % 2 != 0
+;;  {
+;;  prod += x ;
+;;  }
+;;  x *= 2 ;
+;;  y /= 2 ;
+;;  }
+;;  if x_cambio
+;;  {
+;;  prod = - prod ;
+;;  }
+;;  if y_cambio
+;;  {
+;;  prod = - prod ;
+;;  }
+;;  println! ( "x*y={}" , prod ) ;
+;; }
+
+; virtu main01
+;; 0 [CAL 2]
+;; 1 HLT
+;; 2 [PUSHFI "************************************************************"]
+;; 3 [PUSHFI 1]
+;; 4 OUT
+;; 5 NL
+;; 6 [PUSHFI "Se ingresan dos valores enteros, se muestra su producto."]
+;; 7 [PUSHFI 1]
+;; 8 OUT
+;; 9 NL
+;; 10 [PUSHFI "Se utiliza el algoritmo de 'multiplicacion por duplicacion'."]
+;; 11 [PUSHFI 1]
+;; 12 OUT
+;; 13 NL
+;; 14 [PUSHFI "(Metodo campesino ruso de multiplicacion)"]
+;; 15 [PUSHFI 1]
+;; 16 OUT
+;; 17 NL
+;; 18 [PUSHFI "************************************************************"]
+;; 19 [PUSHFI 1]
+;; 20 OUT
+;; 21 NL
+;; 22 [PUSHFI "x: "]
+;; 23 [PUSHFI 1]
+;; 24 OUT
+;; 25 FLUSH
+;; 26 [PUSHFI ""]
+;; 27 [POP 0]
+;; 28 [IN 0]
+;; 29 [PUSHFM 0]
+;; 30 TOI
+;; 31 [POP 1]
+;; 32 [PUSHFI false]
+;; 33 [POP 2]
+;; 34 [PUSHFM 1]
+;; 35 [PUSHFI 0]
+;; 36 LT
+;; 37 [JC 39]
+;; 38 [JMP 44]
+;; 39 [PUSHFM 1]
+;; 40 NEG
+;; 41 [POP 1]
+;; 42 [PUSHFI true]
+;; 43 [POP 2]
+;; 44 [PUSHFI "y: "]
+;; 45 [PUSHFI 1]
+;; 46 OUT
+;; 47 FLUSH
+;; 48 [PUSHFI ""]
+;; 49 [POP 0]
+;; 50 [IN 0]
+;; 51 [PUSHFM 0]
+;; 52 TOI
+;; 53 [POP 3]
+;; 54 [PUSHFI false]
+;; 55 [POP 4]
+;; 56 [PUSHFM 3]
+;; 57 [PUSHFI 0]
+;; 58 LT
+;; 59 [JC 61]
+;; 60 [JMP 66]
+;; 61 [PUSHFM 3]
+;; 62 NEG
+;; 63 [POP 3]
+;; 64 [PUSHFI true]
+;; 65 [POP 4]
+;; 66 [PUSHFI 0]
+;; 67 [POP 5]
+;; 68 [PUSHFM 3]
+;; 69 [PUSHFI 0]
+;; 70 GT
+;; 71 [JC 73]
+;; 72 [JMP 87]
+;; 73 [PUSHFM 3]
+;; 74 [PUSHFI 2]
+;; 75 MOD
+;; 76 [PUSHFI 0]
+;; 77 NEQ
+;; 78 [JC 80]
+;; 79 [JMP 82]
+;; 80 [PUSHFM 1]
+;; 81 [POPADD 5]
+;; 82 [PUSHFI 2]
+;; 83 [POPMUL 1]
+;; 84 [PUSHFI 2]
+;; 85 [POPDIV 3]
+;; 86 [JMP 68]
+;; 87 [PUSHFM 2]
+;; 88 [JC 90]
+;; 89 [JMP 93]
+;; 90 [PUSHFM 5]
+;; 91 NEG
+;; 92 [POP 5]
+;; 93 [PUSHFM 4]
+;; 94 [JC 96]
+;; 95 [JMP 99]
+;; 96 [PUSHFM 5]
+;; 97 NEG
+;; 98 [POP 5]
+;; 99 [PUSHFI "x*y={}"]
+;; 100 [PUSHFM 5]
+;; 101 [PUSHFI 2]
+;; 102 OUT
+;; 103 NL
+;; 104 RETN
+
+; inter main02
+;; ************************************************************
+;; Se ingresan dos valores enteros, se muestra su producto.
+;; Se utiliza el algoritmo de 'multiplicacion por duplicacion'.
+;; (Metodo campesino ruso de multiplicacion)
+;; ************************************************************
+;; x: 12
+;; y: 4
+;; x*y=48
