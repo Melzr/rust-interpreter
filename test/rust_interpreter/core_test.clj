@@ -906,3 +906,333 @@
 ;; x: 12
 ;; y: 4
 ;; x*y=48
+
+;escan main03
+;; use std :: io ;
+;; use std :: io :: Write ;
+;; use std :: process ;
+;; fn dividir ( x : i64 , y : i64 , q : & mut i64 , r : & mut i64 )
+;; {
+;;  if y == 0
+;;  {
+;;  println! ( "ERROR: Division por cero!" ) ;
+;;  process :: exit ( 1 ) ;
+;;  }
+;;  * q = 0 ;
+;;  * r = x ;
+;;  if * r < 0
+;;  {
+;;  * r = - * r ;
+;;  }
+;;  let v : i64 ;
+;;  let mut w : i64 ;
+;;  if y >= 0
+;;  {
+;;  v = y ;
+;;  w = y ;
+;;  }
+;;  else
+;;  {
+;;  v = - y ;
+;;  w = - y ;
+;;  }
+;; while w <= * r
+;;  {
+;;  w *= 2 ;
+;;  }
+;;  while w > v
+;;  {
+;;  * q *= 2 ;
+;;  w /= 2 ;
+;;  if w <= * r
+;;  {
+;;  * r -= w ;
+;;  * q += 1 ;
+;;  }
+;;  }
+;;  if x < 0
+;;  {
+;;  * r = - * r ;
+;;  * q = - * q ;
+;;  }
+;;  if y < 0
+;;  {
+;;  * q = - * q ;
+;;  }
+;; }
+;; fn mostrar_salida ( cociente : i64 , resto : i64 )
+;; {
+;;  println! ( "Cociente: {}" , cociente ) ;
+;;  println! ( "Resto: {}" , resto ) ;
+;; }
+;; fn main ( )
+;; {
+;;  println! ( "**************************************************************" ) ;
+;;  println! ( "Se ingresan dos valores enteros, se muestra su cociente." ) ;
+;;  println! ( "Se utiliza el algoritmo 'desplazar y restar' (shift-subtract)." ) ;
+;;  println! ( "**************************************************************" ) ;
+;;  print! ( "x: " ) ;
+;;  io :: stdout ( ) . flush ( ) . expect ( "Error de escritura!" ) ;
+;;  let mut renglon : String = String :: new ( ) ;
+;;  io :: stdin ( ) . read_line ( & mut renglon ) . expect ( "Error de lectura!" ) ;
+;;  let x : i64 = renglon . trim ( ) . parse :: < i64 > ( ) . expect ( "Se esperaba un numero entero!" ) ;
+;;  print! ( "y: " ) ;
+;;  io :: stdout ( ) . flush ( ) . expect ( "Error de escritura!" ) ;
+;;  renglon = String :: new ( ) ;
+;;  io :: stdin ( ) . read_line ( & mut renglon ) . expect ( "Error de lectura!" ) ;
+;;  let y : i64 = renglon . trim ( ) . parse :: < i64 > ( ) . expect ( "Se esperaba un numero entero!" ) ;
+;;  let mut q : i64 = 0 ;
+;;  let mut r : i64 = 0 ;
+;;  dividir ( x , y , & mut q , & mut r ) ;
+;;  mostrar_salida ( q , r ) ;
+;; }
+
+; virtu main03
+;; 0 [CAL 105]
+;; 1 HLT
+;; 2 [POPARG 3]
+;; 3 [POPARG 2]
+;; 4 [POPARG 1]
+;; 5 [POPARG 0]
+;; 6 [PUSHFM 1]
+;; 7 [PUSHFI 0]
+;; 8 EQ
+;; 9 [JC 11]
+;; 10 [JMP 17]
+;; 11 [PUSHFI "ERROR: Division por cero!"]
+;; 12 [PUSHFI 1]
+;; 13 OUT
+;; 14 NL
+;; 15 [PUSHFI 1]
+;; 16 HLT
+;; 17 [PUSHFI 0]
+;; 18 [POPREF 2]
+;; 19 [PUSHFM 0]
+;; 20 [POPREF 3]
+;; 21 [PUSHREF 3]
+;; 22 [PUSHFI 0]
+;; 23 LT
+;; 24 [JC 26]
+;; 25 [JMP 29]
+;; 26 [PUSHREF 3]
+;; 27 NEG
+;; 28 [POPREF 3]
+;; 29 [PUSHFM 1]
+;; 30 [PUSHFI 0]
+;; 31 GTE
+;; 32 [JC 34]
+;; 33 [JMP 39]
+;; 34 [PUSHFM 1]
+;; 35 [POP 4]
+;; 36 [PUSHFM 1]
+;; 37 [POP 5]
+;; 38 [JMP 45]
+;; 39 [PUSHFM 1]
+;; 40 NEG
+;; 41 [POP 4]
+;; 42 [PUSHFM 1]
+;; 43 NEG
+;; 44 [POP 5]
+;; 45 [PUSHFM 5]
+;; 46 [PUSHREF 3]
+;; 47 LTE
+;; 48 [JC 50]
+;; 49 [JMP 53]
+;; 50 [PUSHFI 2]
+;; 51 [POPMUL 5]
+;; 52 [JMP 45]
+;; 53 [PUSHFM 5]
+;; 54 [PUSHFM 4]
+;; 55 GT
+;; 56 [JC 58]
+;; 57 [JMP 72]
+;; 58 [PUSHFI 2]
+;; 59 [POPMULREF 2]
+;; 60 [PUSHFI 2]
+;; 61 [POPDIV 5]
+;; 62 [PUSHFM 5]
+;; 63 [PUSHREF 3]
+;; 64 LTE
+;; 65 [JC 67]
+;; 66 [JMP 71]
+;; 67 [PUSHFM 5]
+;; 68 [POPSUBREF 3]
+;; 69 [PUSHFI 1]
+;; 70 [POPADDREF 2]
+;; 71 [JMP 53]
+;; 72 [PUSHFM 0]
+;; 73 [PUSHFI 0]
+;; 74 LT
+;; 75 [JC 77]
+;; 76 [JMP 83]
+;; 77 [PUSHREF 3]
+;; 78 NEG
+;; 79 [POPREF 3]
+;; 80 [PUSHREF 2]
+;; 81 NEG
+;; 82 [POPREF 2]
+;; 83 [PUSHFM 1]
+;; 84 [PUSHFI 0]
+;; 85 LT
+;; 86 [JC 88]
+;; 87 [JMP 91]
+;; 88 [PUSHREF 2]
+;; 89 NEG
+;; 90 [POPREF 2]
+;; 91 RETN
+;; 92 [POPARG 1]
+;; 93 [POPARG 0]
+;; 94 [PUSHFI "Cociente: {}"]
+;; 95 [PUSHFM 0]
+;; 96 [PUSHFI 2]
+;; 97 OUT
+;; 98 NL
+;; 99 [PUSHFI "Resto: {}"]
+;; 100 [PUSHFM 1]
+;; 101 [PUSHFI 2]
+;; 102 OUT
+;; 103 NL
+;; 104 RETN
+;; 105 [PUSHFI "**************************************************************"]
+;; 106 [PUSHFI 1]
+;; 107 OUT
+;; 108 NL
+;; 109 [PUSHFI "Se ingresan dos valores enteros, se muestra su cociente."]
+;; 110 [PUSHFI 1]
+;; 111 OUT
+;; 112 NL
+;; 113 [PUSHFI "Se utiliza el algoritmo 'desplazar y restar' (shift-subtract)."]
+;; 114 [PUSHFI 1]
+;; 115 OUT
+;; 116 NL
+;; 117 [PUSHFI "**************************************************************"]
+;; 118 [PUSHFI 1]
+;; 119 OUT
+;; 120 NL
+;; 121 [PUSHFI "x: "]
+;; 122 [PUSHFI 1]
+;; 123 OUT
+;; 124 FLUSH
+;; 125 [PUSHFI ""]
+;; 126 [POP 0]
+;; 127 [IN 0]
+;; 128 [PUSHFM 0]
+;; 129 TOI
+;; 130 [POP 1]
+;; 131 [PUSHFI "y: "]
+;; 132 [PUSHFI 1]
+;; 133 OUT
+;; 134 FLUSH
+;; 135 [PUSHFI ""]
+;; 136 [POP 0]
+;; 137 [IN 0]
+;; 138 [PUSHFM 0]
+;; 139 TOI
+;; 140 [POP 2]
+;; 141 [PUSHFI 0]
+;; 142 [POP 3]
+;; 143 [PUSHFI 0]
+;; 144 [POP 4]
+;; 145 [PUSHFM 1]
+;; 146 [PUSHFM 2]
+;; 147 [PUSHADDR 3]
+;; 148 [PUSHADDR 4]
+;; 149 [CAL 2]
+;; 150 [PUSHFM 3]
+;; 151 [PUSHFM 4]
+;; 152 [CAL 92]
+;; 153 RETN
+
+; inter main03
+;; **************************************************************
+;; Se ingresan dos valores enteros, se muestra su cociente.
+;; Se utiliza el algoritmo 'desplazar y restar' (shift-subtract).
+;; **************************************************************
+;; x: 23
+;; y: 5
+;; Cociente: 4
+;; Resto: 3
+
+; escan main04
+;; use std :: io ;
+;; use std :: io :: Write ;
+;; use std :: process ;
+;; fn mcd ( mut x : i64 , mut y : i64 ) -> i64
+;; {
+;;  if x <= 0 || y <= 0
+;;  {
+;;  println! ( "ERROR: El algoritmo requiere dos numeros enteros positivos!" ) ;
+;;  process :: exit ( 1 ) ;
+;;  }
+;;  while x != y
+;;  {
+;;  if x < y
+;;  {
+;;  y -= x ;
+;;  }
+;;  if y < x
+;;  {
+;;  x -= y ;
+;;  }
+;;  }
+;;  x
+;; }
+;; fn main ( )
+;; {
+;;  println! ( "******************************************************************************" ) ;
+;;  println! ( "Se ingresan dos valores enteros positivos, se muestra su maximo comun divisor." ) ;
+;;  println! ( "Se utiliza el algoritmo de Euclides." ) ;
+;;  println! ( "******************************************************************************" ) ;
+;;  print! ( "x: " ) ;
+;;  io :: stdout ( ) . flush ( ) . expect ( "Error de escritura!" ) ;
+;;  let mut renglon : String = String :: new ( ) ;
+;;  io :: stdin ( ) . read_line ( & mut renglon ) . expect ( "Error de lectura!" ) ;
+;;  let x : i64 = renglon . trim ( ) . parse :: < i64 > ( ) . expect ( "Se esperaba un numero entero!" ) ;
+;;  print! ( "y: " ) ;
+;;  io :: stdout ( ) . flush ( ) . expect ( "Error de escritura!" ) ;
+;;  renglon = String :: new ( ) ;
+;;  io :: stdin ( ) . read_line ( & mut renglon ) . expect ( "Error de lectura!" ) ;
+;;  let y : i64 = renglon . trim ( ) . parse :: < i64 > ( ) . expect ( "Se esperaba un numero entero!" ) ;
+;;  print! ( "{} es el MCD entre " , mcd ( x , y ) ) ;
+;;  println! ( "{} y {}" , x , y ) ;
+;; }
+
+;virtu main04
+
+;inter main04
+
+;escan main05
+
+; virtu main05
+
+; inter main05
+
+;escan main06
+
+; virtu main06
+
+; inter main06
+
+;escan main07
+
+; virtu main07
+
+; inter main07
+
+;escan main08
+
+; virtu main08
+
+; inter main08
+
+;escan main09
+
+; virtu main09
+
+; inter main09
+
+;escan main10
+
+; virtu main10
+
+; inter main10

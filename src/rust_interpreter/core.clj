@@ -1800,8 +1800,8 @@
         ;          Resto: 9
         OUT (let [cant-args (last pila),
                   args (take-last cant-args (butlast pila))]
-              (do (if (pos? cant-args) (apply printf (convertir-formato-impresion args)))
-                  (recur cod regs-de-act (inc cont-prg) (vec (drop-last (+ cant-args 1) pila)) mapa-regs)))
+              (if (pos? cant-args) (apply printf (convertir-formato-impresion args)))
+                  (recur cod regs-de-act (inc cont-prg) (vec (drop-last (+ cant-args 1) pila)) mapa-regs))
 
         ; Indica el retorno de la llamada a una funcion (no procedimiento). Llama recursivamente a interpretar con valores actualizados de regs-de-act (se elimina el ultimo de ellos), cont-prg (pasa a ser el penultimo valor en la pila) y pila (se quita de ella el nuevo cont-prg).
         ; Por ejemplo: 
@@ -1996,6 +1996,10 @@
   [n] (if (zero? n) "" (apply str (repeat n "  ")))
 )
 
+(defn curly-bracket?
+  [token] (or (= token (symbol "{")) (= token (symbol "}")))
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LISTAR: Recibe una lista con los tokens de un programa en Rust (o de parte de un programa) y muestra el codigo fuente formateado. Retorna nil.
 ; Por ejemplo:
@@ -2012,10 +2016,10 @@
   ([tokens tabs] (
     cond
       (empty? tokens) (do (print "\n") nil)
-      (= (symbol "{") (first tokens)) (do (print (str "\n" (get-tabs tabs) (first tokens) "\n" (get-tabs (inc tabs)))) (recur (rest tokens) (inc tabs)))
-      (= (symbol "}") (first tokens)) (do (print (str "\n" (get-tabs (dec tabs)) (first tokens) "\n" (get-tabs (dec tabs)))) (recur (rest tokens) (dec tabs)))
-      (= (symbol ";") (first tokens)) (do (print (str (first tokens) "\n" (get-tabs tabs))) (recur (rest tokens) tabs))
-      (string? (first tokens)) (do (print (str "\"" (-> (first tokens) (clojure.string/replace #"\t" "\\\\t") (clojure.string/replace #"\n" "\\\\n")) "\"")) (recur (rest tokens) tabs))
+      (= (symbol "{") (first tokens)) (do (if (curly-bracket? (second tokens)) (print (str "\n" (get-tabs tabs) (first tokens))) (print (str "\n" (get-tabs tabs) (first tokens) "\n" (get-tabs (inc tabs))))) (recur (rest tokens) (inc tabs)))
+      (= (symbol "}") (first tokens)) (do (if (curly-bracket? (second tokens)) (print (str "\n" (get-tabs (dec tabs)) (first tokens))) (print (str "\n" (get-tabs (dec tabs)) (first tokens) "\n" (get-tabs (dec tabs))))) (recur (rest tokens) (dec tabs)))
+      (= (symbol ";") (first tokens)) (do (if (curly-bracket? (second tokens)) (print (str (first tokens))) (print (str (first tokens) "\n" (get-tabs tabs)))) (recur (rest tokens) tabs))
+      (string? (first tokens)) (do (print (str "\"" (-> (first tokens) (clojure.string/replace #"\t" "\\\\t") (clojure.string/replace #"\n" "\\\\n")) "\"")) (print " ") (recur (rest tokens) tabs))
       :else (do (print (first tokens)) (print " ") (recur (rest tokens) tabs))
   ))
 )
