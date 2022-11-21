@@ -2016,11 +2016,11 @@
   ([tokens tabs] (
     cond
       (empty? tokens) (do (print "\n") nil)
-      (= (symbol "{") (first tokens)) (do (if (curly-bracket? (second tokens)) (print (str "\n" (get-tabs tabs) (first tokens))) (print (str "\n" (get-tabs tabs) (first tokens) "\n" (get-tabs (inc tabs))))) (recur (rest tokens) (inc tabs)))
-      (= (symbol "}") (first tokens)) (do (if (curly-bracket? (second tokens)) (print (str "\n" (get-tabs (dec tabs)) (first tokens))) (print (str "\n" (get-tabs (dec tabs)) (first tokens) "\n" (get-tabs (dec tabs))))) (recur (rest tokens) (dec tabs)))
-      (= (symbol ";") (first tokens)) (do (if (curly-bracket? (second tokens)) (print (str (first tokens))) (print (str (first tokens) "\n" (get-tabs tabs)))) (recur (rest tokens) tabs))
-      (string? (first tokens)) (do (print (str "\"" (-> (first tokens) (clojure.string/replace #"\t" "\\\\t") (clojure.string/replace #"\n" "\\\\n")) "\"")) (print " ") (recur (rest tokens) tabs))
-      :else (do (print (first tokens)) (print " ") (recur (rest tokens) tabs))
+      (= (symbol "{") (first tokens)) (do (print (str "\n" (get-tabs tabs) (first tokens))) (print (if (or (curly-bracket? (second tokens)) (nil? (second tokens))) "" (str "\n" (get-tabs (inc tabs))))) (recur (rest tokens) (inc tabs)))
+      (= (symbol "}") (first tokens)) (do (print (str "\n" (get-tabs (dec tabs)) (first tokens))) (print (if (or (curly-bracket? (second tokens)) (nil? (second tokens))) "" (str "\n" (get-tabs (dec tabs))))) (recur (rest tokens) (dec tabs)))
+      (= (symbol ";") (first tokens)) (do (print (str (first tokens))) (print (if (or (curly-bracket? (second tokens)) (nil? (second tokens))) "" (str "\n" (get-tabs tabs)))) (recur (rest tokens) tabs))
+      (string? (first tokens)) (do (print (str "\"" (-> (first tokens) (clojure.string/replace #"\t" "\\\\t") (clojure.string/replace #"\n" "\\\\n")) "\"")) (print (if (curly-bracket? (second tokens)) "" " ")) (recur (rest tokens) tabs))
+      :else (do (print (first tokens)) (print (if (curly-bracket? (second tokens)) "" " ")) (recur (rest tokens) tabs))
   ))
 )
 
