@@ -2294,16 +2294,22 @@
 ; ("Las raices cuadradas de %.0f son +%.8f y -%.8f" 4.0 1.999999999985448 1.999999999985448)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn convertir-formato-impresion
-  ([argumentos] (if (empty? argumentos) argumentos (convertir-formato-impresion (rest argumentos) (clojure.string/replace (first argumentos) #"\{\}" "{:.0}") (rest argumentos))))
-  ([valores cadena valores-no-parseados] (
+  ([argumentos] (if (empty? argumentos) argumentos (convertir-formato-impresion (rest argumentos) (first argumentos) (rest argumentos))))
+  ([valores cadena valores-no-parseados] (let [argumento (first valores-no-parseados)] (
     if (empty? valores-no-parseados)
       (cons cadena valores)
       (cond
-        (integer? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%d") (rest valores-no-parseados))
-        (float? (first valores-no-parseados)) (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%.$1f") (rest valores-no-parseados))
-        :else (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%s") (rest valores-no-parseados))
+        (integer? argumento) (recur valores (clojure.string/replace-first cadena #"\{\}" "%d") (rest valores-no-parseados))
+        (float? argumento)
+          (let [formatter (if (== (int argumento) argumento) "%.0f" "%f"), cadena-parsed (clojure.string/replace-first cadena #"\{\}" formatter)]
+            (if (= cadena-parsed cadena)
+              (recur valores (clojure.string/replace-first cadena #"\{:.(\d+)\}" "%.$1f") (rest valores-no-parseados))
+              (recur valores cadena-parsed (rest valores-no-parseados))
+            )
+          )
+        :else (recur valores (clojure.string/replace-first cadena #"\{\}" "%s") (rest valores-no-parseados))
       )
-  ))
+  )))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

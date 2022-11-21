@@ -401,6 +401,15 @@
   )
 )
 
+(deftest convertir-formato-impresion-float-no-redondo
+  (testing "convertir-formato-impresion float no redondo"
+    (is (=
+      '("%f" 4.1)
+      (convertir-formato-impresion '("{}" 4.1))
+    ))
+  )
+)
+
 ; user=> (dividir 12 3)
 ; 4
 (deftest dividir-12-3
