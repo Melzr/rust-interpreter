@@ -181,7 +181,7 @@
 (defn escanear-arch [nom]
   (map #(let [aux (try (clojure.edn/read-string %) (catch Exception e (symbol %)))] (if (or (number? aux) (string? aux) (instance? Boolean aux)) aux (symbol %)))
         (remove empty? (with-open [rdr (clojure.java.io/reader nom)]
-                                  (flatten (doall (map #(re-seq #"print!|println!|format!|\:\:|\<\=|\>\=|\-\>|\=\=|\!\=|\+\=|\-\=|\*\=|\/\=|\%\=|\&\&|\|\||\<|\>|\=|\(|\)|\,|\;|\+|\-|\*|\/|\[|\]|\{|\}|\%|\&|\!|\:|\"[^\"]*\"|\d+\.\d+E[+-]?\d+|\d+\.E[+-]?\d+|\.\d+E[+-]?\d+|\d+E[+-]?\d+|\d+\.\d+|\d+\.|\.\d+|\.|\d+|\_[A-Za-z0-9\_]+|[A-Za-z][A-Za-z0-9\_]*|\.|\'|\"|\||\#|\$|\@|\?|\^|\\|\~" %) (line-seq rdr))))))))
+                                  (flatten (doall (map #(re-seq #"print!|println!|format!|\:\:|\<\=|\>\=|\-\>|\=\=|\!\=|\+\=|\-\=|\*\=|\/\=|\%\=|\<\<\=|\&\&|\|\||\<|\>|\=|\(|\)|\,|\;|\+|\-|\*|\/|\[|\]|\{|\}|\%|\&|\!|\:|\"[^\"]*\"|\d+\.\d+E[+-]?\d+|\d+\.E[+-]?\d+|\.\d+E[+-]?\d+|\d+E[+-]?\d+|\d+\.\d+|\d+\.|\.\d+|\.|\d+|\_[A-Za-z0-9\_]+|[A-Za-z][A-Za-z0-9\_]*|\.|\'|\"|\||\#|\$|\@|\?|\^|\\|\~" %) (line-seq rdr))))))))
 
 
 (defn buscar-mensaje [cod]
@@ -1183,6 +1183,18 @@
   (if (= (estado amb) :sin-errores)
       (let [ident (last (simb-ya-parseados amb))]
            (cond
+             (= (simb-actual amb) (symbol "<<="))
+             (if (not puntero?)
+                 (-> amb
+                     (verificar-que-sea-var)
+                     (escanear)
+                     (expresion)
+                     (generar-con-valor ,,, 'POPSHIFTL ident))
+                 (-> amb
+                     (verificar-que-sea-var-ref)
+                     (escanear)
+                     (expresion)
+                     (generar-con-valor ,,, 'POPSHIFTLREF ident)))
              (= (simb-actual amb) (symbol "="))
              (if (not puntero?)
                  (-> amb
@@ -1864,6 +1876,9 @@
         POPMOD (let [res (asignar-aritmetico regs-de-act pila reg-actual fetched mod)]
                 (if (nil? res) res (recur cod res (inc cont-prg) (vec (butlast pila)) mapa-regs)))
 
+        POPSHIFTL (let [res (asignar-aritmetico regs-de-act pila reg-actual fetched bit-shift-left)]
+                (if (nil? res) res (recur cod res (inc cont-prg) (vec (butlast pila)) mapa-regs)))
+
         ; Incrementa cont-prg en 1 y quita el ultimo elemento de pila. El argumento indica en reg-actual las coordenadas [#reg-act, offset] donde sumar el elemento en regs-de-act al llamar recursivamente a interpretar (verificando la compatibilidad de los tipos)
         ; Por ejemplo: 
         ; fetched: [POPADDREF 2]
@@ -1892,6 +1907,9 @@
 
         ; POPMODREF: Como POPADDREF, pero calcula el resto de la division.
         POPMODREF (let [res (asignar-aritmetico-ref regs-de-act pila reg-actual fetched mod)]
+                    (if (nil? res) res (recur cod res (inc cont-prg) (vec (butlast pila)) mapa-regs)))
+        
+        POPSHIFTLREF (let [res (asignar-aritmetico-ref regs-de-act pila reg-actual fetched bit-shift-left)]
                     (if (nil? res) res (recur cod res (inc cont-prg) (vec (butlast pila)) mapa-regs)))
 
         ; Incrementa cont-prg en 1, quita de la pila dos elementos, calcula su suma y la coloca al final de la pila 
