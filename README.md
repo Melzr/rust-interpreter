@@ -1,44 +1,71 @@
-# rust-interpreter
+# Rust interpreter
 
-FIXME: description
+```
+>lein run
 
-## Installation
+Interprete de RUST en Clojure
+Trabajo Practico de 75.14/95.48 - Lenguajes Formales - 2022
 
-Download from http://example.com/FIXME.
+Inspirado en: rustc 1.64.0 (2022-09-22)
 
-## Usage
+Lista de comandos posibles:
+AYUDA: volver a este menu
+SALIR: volver al REPL de Clojure
+ESCAN <archivo>: mostrar los tokens de un programa escrito en Rust
+VIRTU <archivo>: mostrar la RI de un programa escrito en Rust
+INTER <archivo>: interpretar la RI de un programa escrito en Rust
 
-FIXME: explanation
+Rust> virtu examples/main01.rs
+0 [CAL 2]
+1 HLT
+2 [PUSHFI "- Hola, mundo!"]
+3 [PUSHFI 1]
+4 OUT
+5 NL
+6 [PUSHFI "- My name is {}, James {}.\n- Hello, {}{}{}!"]
+7 [PUSHFI "Bond"]
+8 [PUSHFI "Bond"]
+9 [PUSHFI 2]
+10 NEG
+11 [PUSHFI 2]
+12 ADD
+13 [PUSHFI 0]
+14 [PUSHFI 3]
+15 [PUSHFI 2]
+16 [PUSHFI 2]
+17 MUL
+18 ADD
+19 [PUSHFI 6]
+20 OUT
+21 [PUSHFI 0]
+22 OUT
+23 NL
+24 [PUSHFI "- Hasta la vista, Baby!\t\tI'll be back..."]
+25 [PUSHFI 1]
+26 OUT
+27 NL
+28 [PUSHFI "{}"]
+29 [PUSHFI true]
+30 [JC 32]
+31 [JMP 34]
+32 [PUSHFI "- Lo dudo!\t\t\tBye!"]
+33 [JMP 35]
+34 [PUSHFI "- Obviamente!"]
+35 [PUSHFI 2]
+36 OUT
+37 NL
+38 RETN
+Rust> inter examples/main01.rs
+- Hola, mundo!
+- My name is Bond, James Bond.
+- Hello, 007!
+- Hasta la vista, Baby!         I'll be back...
+- Lo dudo!                      Bye!
+Rust> salir
+```
 
-    $ java -jar rust-interpreter-0.1.0-standalone.jar [args]
+### Tests
 
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2022 FIXME
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
-
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+```
+>lein test
+```
